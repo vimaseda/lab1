@@ -200,7 +200,7 @@ Invalid_argument exception for instance.
 
 let rec max_list (lst : int list) : int =
   match lst with
-  | h :: s :: t -> if h > s then max_list (h :: t) else max_list (s :: t)
+  | h :: s :: t -> max_list (max h s :: t)
   | h :: t -> h ;;
 
 (*......................................................................
@@ -216,12 +216,9 @@ that, zip [1] [2; 3; 4] = [(1, 2); (false, 3); (false, 4)]?
 ......................................................................*)
 
 let rec zip (x : int list) (y : int list) : (int * int) list =
-  match x with
-  | [] -> []
-  | h1 :: t1 -> 
-    match y with
-    | h2 :: t2 -> (h1, h2) :: zip t1 t2
-    | [] -> [] ;;
+  match x, y with
+  | [], [] -> []
+  | h1 :: t1, h2 :: t2 -> (h1, h2) :: zip t1 t2 ;;
 
 (*.....................................................................
 Exercise 10: Recall the definition of the function prods from lecture
@@ -252,7 +249,7 @@ let rec prods (lst : (int * int) list) : int list =
   | (x, y) :: tail -> (x * y) :: (prods tail) ;;
 
 let dotprod (a : int list) (b : int list) : int =
-  failwith "dotprod not implemented" ;;
+  sum (prods (zip a b)) ;;
 
 (*======================================================================
 Part 4: High-order functional programming with map, filter, and fold
