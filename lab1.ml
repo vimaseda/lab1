@@ -203,7 +203,7 @@ Invalid_argument exception for instance.
 let rec max_list (lst : int list) : int =
   match lst with
   | h :: s :: t -> max_list (max h s :: t)
-  | h :: t -> h ;;
+  | h :: _ -> h ;;
 
 (*......................................................................
 Exercise 9: Define a function zip, that takes two int lists and
