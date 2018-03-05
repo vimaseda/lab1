@@ -1,5 +1,3 @@
-open List ;;
-
 (* 
 			      CS51 Lab 1
 		     Basic Functional Programming
@@ -114,16 +112,15 @@ Exercise 4: Draw the tree that the concrete syntax "- 5 - 3" does
 correspond to. Check it with a member of the course staff if you'd
 like.
 
-          -
-          ^
-        /   \
-       /     \
-      -       3
-      |
-      |
-      5
+      -
+      ^
+     / \
+    /   \
+   -     3
+   |
+   5
 ......................................................................*)
-   
+
 (*======================================================================
 Part 2: Types and type inference
 
@@ -137,11 +134,11 @@ error is generated.
 
 let exercise5a : int = 42 ;;
 
-let exercise5b : string  =
+let exercise5b : string =
   let greet y = "Hello " ^ y
   in greet "World!";;
 
-let exercise5c : int * float -> int  =
+let exercise5c : int * float -> int =
   fun (x, y) -> x + int_of_float y ;;
 
 let exercise5d : int -> bool =
@@ -177,9 +174,10 @@ code below to define exercise6 to be the square_all function applied
 to the list containing the elements 3, 4, and 5? You'll want to
 replace the "[]" with the correct functional call.
 ......................................................................*)
+open List ;;
 
 let square_all (lst : int list) : int list =
-  map (fun x -> x * x) lst;;
+  List.map (fun x -> x * x) lst ;;
 
 let exercise6 = square_all [3; 4; 5] ;;
 
@@ -188,10 +186,8 @@ Exercise 7: Define a recursive function that sums an integer
 list. (What's a sensible return value for the empty list?)
 ......................................................................*)
 
-let rec sum (lst : int list) : int =
-  match lst with
-  | [] -> 0
-  | h :: t ->  h + sum t ;;
+let sum (lst : int list) : int =
+  fold_left (+) 0 lst ;;
   
 (*......................................................................
 Exercise 8: Define a recursive function that returns the maximum
@@ -202,8 +198,10 @@ Invalid_argument exception for instance.
 
 let rec max_list (lst : int list) : int =
   match lst with
-  | h :: s :: t -> max_list (max h s :: t)
-  | h :: _ -> h ;;
+  | [] -> raise (Invalid_argument "Empty list")
+  | [x] -> x
+  | f :: s :: tl -> 
+      if f > s then max_list (f :: tl) else max_list (s :: tl) ;;
 
 (*......................................................................
 Exercise 9: Define a function zip, that takes two int lists and
@@ -220,6 +218,7 @@ that, zip [1] [2; 3; 4] = [(1, 2); (false, 3); (false, 4)]?
 let rec zip (x : int list) (y : int list) : (int * int) list =
   match x, y with
   | [], [] -> []
+  | [], _ | _, [] -> raise (Invalid_argument "Lists of different lengths")
   | h1 :: t1, h2 :: t2 -> (h1, h2) :: zip t1 t2 ;;
 
 (*.....................................................................
@@ -251,7 +250,7 @@ let rec prods (lst : (int * int) list) : int list =
   | (x, y) :: tail -> (x * y) :: (prods tail) ;;
 
 let dotprod (a : int list) (b : int list) : int =
-  sum (prods (zip a b)) ;;
+  prods (zip a b) ;;
 
 (*======================================================================
 Part 4: High-order functional programming with map, filter, and fold
@@ -309,14 +308,14 @@ Exercise 11: Reimplement sum using fold_left, naming it sum_ho (for
 ......................................................................*)
 
 let sum_ho (lst : int list) : int =
-  fold_left ( + ) 0 lst ;;
+  List.fold_left (+) 0 lst ;;
 
 (*......................................................................
 Exercise 12: Reimplement prods using map.
 ......................................................................*)
 
 let prods_ho (lst : (int * int) list) : int list =
-  map (fun (x1, y1) -> x1 * y1) lst ;;
+  List.map (fun (x, y) -> x * y) lst ;;
   
 (*......................................................................
 Exercise 13: The OCaml List module provides, in addition to the map,
@@ -328,7 +327,7 @@ two lists to form the result list. Use map2 to reimplement zip.
 ......................................................................*)
 
 let zip_ho (x : int list) (y : int list) : (int * int) list =
-  map2 (fun a b -> (a,b)) x y ;;
+  List.map2 (fun x y -> (x, y)) x y ;;
 
 (*......................................................................
 Exercise 14: Define a function evens, using these higher-order
@@ -337,4 +336,4 @@ even numbers in its argument list.
 ......................................................................*)
    
 let evens : int list -> int list =
-  fun lst -> filter (fun x -> x mod 2 = 0) lst ;;
+  List.filter (fun x -> x mod 2 = 0) ;;
